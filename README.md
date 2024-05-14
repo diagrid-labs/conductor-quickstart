@@ -19,5 +19,6 @@ Apply Kubernetes resources directly from the remote GitHub repository:
 $ kubectl apply -f https://raw.githubusercontent.com/diagrid-labs/conductor-quickstart/main/deploy.yaml
 ```
 
-For more detailed information and further steps, please refer to the Conductor Quickstart Documentation linked above.
+## More info
+For more detailed information and further steps, please refer to the [Conductor Quickstart Documentation](https://docs.diagrid.io/conductor/getting-started/quickstart) or visit the [Conductor page](https://www.diagrid.io/conductor) on the Diagrid website to learn about how Conductor can help you operate Dapr applications on Kubernetes.
 
