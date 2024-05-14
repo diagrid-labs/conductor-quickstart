@@ -1,0 +1,110 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nodeapp
+  labels:
+    app: node
+spec:
+  selector:
+    app: node
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+  labels:
+    app: node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "nodeapp"
+        dapr.io/app-port: "3000"
+        dapr.io/enable-api-logging: "true"
+    spec:
+      containers:
+      - name: node
+        image: ghcr.io/dapr/samples/hello-k8s-node:latest
+        env:
+        - name: APP_PORT
+          value: "3000"
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: Always
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pythonapp
+  labels:
+    app: python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python
+  template:
+    metadata:
+      labels:
+        app: python
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "pythonapp"
+        dapr.io/enable-api-logging: "true"
+    spec:
+      containers:
+        - name: python
+          image: ghcr.io/dapr/samples/hello-k8s-python:latest
+
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: statestore
+spec:
+  type: state.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: dapr-dev-redis-master.default.svc.cluster.local:6379
+    - name: redisPassword
+      secretKeyRef:
+        name: dapr-dev-redis
+        key: redis-password
+auth:
+  secretStore: kubernetes
+
+---
+apiVersion: dapr.io/v1alpha1
+kind: Resiliency
+metadata:
+  name: myresiliency
+scopes:
+  - nodeapp
+
+spec:
+  policies:
+    retries:
+      retry-forever-policy:
+        policy: exponential
+        duration: 1s
+        maxRetries: -1
+
+  targets:
+    components:
+      statestore:
+        outbound:
+          retry: retry-forever-policy
