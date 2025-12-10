@@ -5,7 +5,7 @@ This is an accompanying repository for the [Conductor Quickstart](https://docs.d
 
 
 ## Getting Started
-To deploy this application, ensure that you have Conductor connected to your Kubernetes environment. Follow the detailed steps in  [Conductor Quickstart Documentation](https://docs.diagrid.io/conductor/getting-started/quickstart) to set up your environment.
+To deploy this application, ensure that you have Conductor connected to your Kubernetes environment. Follow the detailed steps in  [Conductor Quickstart Documentation](https://docs.diagrid.io/deploy/self-hosted-dapr/diagrid-enterprise/conductor/getting-started/quickstart/) to set up your environment.
 
 ## Deployment
 This application comprises a Python App that generates messages and a Node App that stores these messages in a Redis state store. Follow these steps to deploy a Redis instance and the application into Kubernetes.
